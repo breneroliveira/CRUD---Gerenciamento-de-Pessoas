@@ -1,12 +1,23 @@
 let listaPessoas = [];
 
-function gerarId() {
-  return Math.floor(Math.random() * 1000);
-}
+// Professor, optei por não usar a função de IDs aleatórios.
+// function gerarId() {
+//   return Math.floor(Math.random() * 1000);
+// }
+
+// Nesse sentido, professor, optei por usar um objeto para criar IDs sequenciais, porque
+// fica melhor para usar as funções de atualização e deleção. Dessa forma, os índices são sequenciais, 
+// tornando o código mais fácil de debuggar.
+const idGenerator = {
+  nextId: 0,
+  gerarId() {
+    return this.nextId++;
+  }
+};
 
 // CREATE
 function cadastrarPessoa(dadosPessoa) {
-  const id = gerarId();
+  const id = idGenerator.gerarId();
 
   dadosPessoa.id = id;
   listaPessoas.push(dadosPessoa);
@@ -15,16 +26,23 @@ function cadastrarPessoa(dadosPessoa) {
 }
 
 // UPDATE
-function atualizarPessoa(id, dadosAtualizados) {
-    for (let index = 0; index < listaPessoas.length; index++) {
-        const pessoa = listaPessoas[index];
-        if (pessoa.id === id) {
-            listaPessoas[index] = { ...pessoa, ...dadosAtualizados };
-            console.log(`Pessoa atualizada com sucesso! ID: ${id}`);
-        } else {
-            console.error(`Pessoa com ID ${id} não encontrada.`);
-        }
+function atualizarPessoa(id, atualizacao) {
+  let pessoaEncontrada = null;
+
+  for (const pessoa of listaPessoas) {
+    if (pessoa.id === id) {
+      pessoaEncontrada = pessoa;
+      break;
     }
+  }
+
+  if (!pessoaEncontrada) {
+    console.error(`Pessoa com ID ${id} não encontrada.`)
+    console.log("Pessoa encontrada: ", pessoaEncontrada);
+  } else {
+    Object.assign(pessoaEncontrada, atualizacao);
+    console.log(`Pessoa atualizada com sucesso! ID: ${id}`);
+  }
 }
 
 // DELETE
@@ -55,7 +73,7 @@ cadastrarPessoa({ nome: "Maria", idade: 25, cidade: "Rio de Janeiro" });
 
 atualizarPessoa(1, { cidade: "Brasília" });
 
-//deletarPessoa(2);
+deletarPessoa(1);
 
 const pessoas = listarPessoas();
 console.log(pessoas);
